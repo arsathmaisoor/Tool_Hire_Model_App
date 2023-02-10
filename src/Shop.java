@@ -1,47 +1,54 @@
 package src;
 
-import java.io.*;
-import java.util.*;
-import javafx.stage.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.JFileChooser;
 
 public class Shop {
-    private ArrayList<Tool> toolList;
-    
-    public Shop() {
-        toolList = new ArrayList<>();
-    }
-    
+    ArrayList<Tool> toolList = new ArrayList<Tool>();
+
     public void storeTool(Tool tool) {
         toolList.add(tool);
     }
 
+    public void printAllTools() {
+        for (Tool tool : toolList) {
+            System.out.println(tool);
+        }
+    }
+
     public void readToolData() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select tool data file");
-        File selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(selectedFile))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] data = line.split(",");
-                    String toolName = data[0];
-                    String itemCode = data[1];
-                    int timesBorrowed = Integer.parseInt(data[2]);
-                    boolean onLoan = Boolean.parseBoolean(data[3]);
-                    int cost = Integer.parseInt(data[4]);
-                    int weight = Integer.parseInt(data[5]);
-                    Tool tool = new Tool(toolName, itemCode, timesBorrowed, onLoan, cost, weight);
-                    toolList.add(tool);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File("tool_data_1.txt"));
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            try {
+                Scanner fileScanner = new Scanner(selectedFile);
+                while (fileScanner.hasNextLine()) {
+                    String lineOfText = fileScanner.nextLine().trim();
+                    if (!lineOfText.startsWith("//") && !lineOfText.isEmpty()) {
+                        Scanner lineScanner = new Scanner(lineOfText).useDelimiter(",");
+                        String toolName = lineScanner.next();
+                        String itemCode = lineScanner.next();
+                        int timesBorrowed = lineScanner.nextInt();
+                        boolean onLoan = lineScanner.nextBoolean();
+                        int cost = lineScanner.nextInt();
+                        int weight = lineScanner.nextInt();
+                        Tool tool = new Tool(toolName, itemCode, timesBorrowed, onLoan, cost, weight);
+                        toolList.add(tool);
+                    }
                 }
-            } catch (IOException e) {
-                System.out.println("Error reading file: " + e.getMessage());
+                fileScanner.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found: " + selectedFile.getAbsolutePath());
             }
         }
     }
-    
-    public void printAllTools() {
-        for (Tool tool : toolList) {
-            tool.printDetails();
-        }
-    }
+
 }
+
