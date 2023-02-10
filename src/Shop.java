@@ -22,7 +22,7 @@ public class Shop {
 
     public void readToolData() {
         JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File("tool_data_1.txt"));
+        fileChooser.setCurrentDirectory(new File("."));
         int result = fileChooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
@@ -41,6 +41,7 @@ public class Shop {
                         int weight = lineScanner.nextInt();
                         Tool tool = new Tool(toolName, itemCode, timesBorrowed, onLoan, cost, weight);
                         toolList.add(tool);
+                        lineScanner.close();
                     }
                 }
                 fileScanner.close();

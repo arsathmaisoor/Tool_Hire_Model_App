@@ -75,4 +75,9 @@ public class Tool{
     public void printDetails() {
         System.out.println("Tool name: " + toolName + "; code: " + itemCode + "; timesBorrowed: " + timesBorrowed + "; onLoan: " + (onLoan ? "yes" : "no") + "; cost: " + cost + "; weight: " + weight);
     }
+
+    @Override
+    public String toString() {
+        return toolName + ", " + itemCode + ", " + timesBorrowed + ", " + onLoan + ", " + cost + ", " + weight;
+    }
 }
