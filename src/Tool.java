@@ -1,12 +1,14 @@
 package src;
 
+import java.util.*;
+
 public class Tool{
-    private String toolName;
-    private String itemCode;
-    private int timesBorrowed;
-    private boolean onLoan;
-    private int cost;
-    private int weight;
+    protected String toolName;
+    protected String itemCode;
+    protected int timesBorrowed;
+    protected boolean onLoan;
+    protected int cost;
+    protected int weight;
 
     public Tool(String toolName, String itemCode, int timesBorrowed, boolean onLoan, int cost, int weight) {
         this.toolName = toolName;
@@ -16,6 +18,7 @@ public class Tool{
         this.cost = cost;
         this.weight = weight;
     }
+
 
     //Accessor and Mutator of toolName
     public String getToolName() {
@@ -76,8 +79,19 @@ public class Tool{
         System.out.println("Tool name: " + toolName + "; code: " + itemCode + "; timesBorrowed: " + timesBorrowed + "; onLoan: " + (onLoan ? "yes" : "no") + "; cost: " + cost + "; weight: " + weight);
     }
 
+    public void readData(Scanner scanner) {
+        toolName = scanner.next();
+        itemCode = scanner.next();
+        timesBorrowed = scanner.nextInt();
+        onLoan = scanner.nextBoolean();
+        cost = scanner.nextInt();
+        weight = scanner.nextInt();
+    }
+
     @Override
     public String toString() {
         return toolName + ", " + itemCode + ", " + timesBorrowed + ", " + onLoan + ", " + cost + ", " + weight;
     }
 }
+
+
