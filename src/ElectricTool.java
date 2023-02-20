@@ -2,17 +2,16 @@ package src;
 
 import java.util.*;
 
-
 public class ElectricTool extends Tool {
     private boolean rechargeable;
     private String power;
 
-    public ElectricTool(String toolName, String itemCode, int timesBorrowed, boolean onLoan, int cost, int weight, boolean rechargeable, String power) {
-        super(toolName, itemCode, timesBorrowed, onLoan, cost, weight);
+    public ElectricTool(String toolName, String toolCode, int cost, int timesBorrowed, boolean onLoan, int weight,
+            boolean rechargeable, String power) {
+        super(toolName, toolCode, cost, timesBorrowed, onLoan, weight);
         this.rechargeable = rechargeable;
         this.power = power;
     }
-
 
     public boolean isRechargeable() {
         return rechargeable;
@@ -46,5 +45,11 @@ public class ElectricTool extends Tool {
         if (scanner.hasNextInt()) {
             this.power = scanner.next();
         }
+    }
+
+    @Override
+    public String toString() {
+        return toolName + ", " + toolCode + ", " + cost + ", " + timesBorrowed + ", " + onLoan + ", " + weight + ", "
+                + rechargeable + ", " + power;
     }
 }
