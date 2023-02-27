@@ -4,20 +4,57 @@ package src;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.Scanner;
-
+import java.io.PrintWriter;
 import javax.swing.JFileChooser;
+//import src.Tool;
+//import src.Customer;
+
+
 
 public class Shop {
     ArrayList<Tool> toolList = new ArrayList<Tool>();
     ArrayList<Accessories> accessoriesList = new ArrayList<Accessories>();
+    ArrayList<Customer> customerList = new ArrayList<Customer>();
+
+    HashMap<String, Customer> customerMap;
+    HashMap<String, Tool> toolMap;
+    HashMap<String, Accessories> accessoriesMap;
+
+
+    private Random randomGenerator = new Random();
+
+
+
+    public Shop() {
+        toolList = new ArrayList<Tool>();
+        accessoriesList = new ArrayList<Accessories>();
+        customerList = new ArrayList<Customer>();
+
+        customerMap = new HashMap<>();
+        accessoriesMap = new HashMap<>();
+        toolMap = new HashMap<>();
+    }
 
     public void storeTool(Tool tool) {
         toolList.add(tool);
+        toolMap.put(tool.getItemCode(), tool);
     }
 
     public void storeAccessory(Accessories accessories) {
         accessoriesList.add(accessories);
+        accessoriesMap.put(accessories.getItemCode(), accessories);
+    }
+
+    public void storeCustomer(Customer customer) {
+        if (customer.getCustomerID().equals("unknown")) {
+            String newID = generateCustomerID("AB-", 6);
+            customer.setCustomerID(newID);
+        }
+        customerList.add(customer);
+        customerMap.put(customer.getCustomerID(), customer);
     }
 
     public void printAllTools() {
@@ -28,6 +65,7 @@ public class Shop {
         for (Accessories accessories:accessoriesList) {
             System.out.println(accessories);
         }
+        //
     }
 
     public void readToolData() {
@@ -120,6 +158,88 @@ public class Shop {
 
             }
         }
+    }
+
+    public void readCustomerData() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File("."));
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+            try {
+                Scanner fileScanner = new Scanner(selectedFile);
+                //String typeOfData = null;
+                while (fileScanner.hasNextLine()) {
+                    String lineOfText = fileScanner.nextLine().trim();
+                    if (!lineOfText.startsWith("//") && !lineOfText.isEmpty()) 
+                        {
+                            
+                                    Scanner lineScanner = new Scanner(lineOfText).useDelimiter("\\s*,\\s*");
+                                    String customerID = lineScanner.next();
+                                    String surname = lineScanner.next();
+                                    String firstName = lineScanner.next();
+                                    String otherInitials = lineScanner.next();
+                                    String title = lineScanner.next();                                    
+                                    Customer customer = new Customer(surname, firstName, otherInitials, title);
+                                    storeCustomer(customer);
+                                    lineScanner.close();
+                                 
+                                 
+                            }
+                            else {
+                                System.out.println("");
+                        }
+                    }
+                    
+                
+                fileScanner.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("File not found: " + selectedFile.getAbsolutePath());
+
+            }
+        }
+    }
+
+    
+
+    public void printAllCustomers() {
+        for (Customer customer : customerList) {
+            customer.printDetails();
+        }
+    }
+
+    public void writeCustomerData(String filename) throws FileNotFoundException {
+        PrintWriter writer = new PrintWriter(new File(filename));
+
+        for (Customer customer : customerList) {
+            customer.writeData(writer);
+        }
+
+        writer.close();
+    }
+
+        
+    public String generateCustomerID(String prefix, int numDigits) {
+        String id = prefix;
+        int maxNumber = (int) Math.pow(10, numDigits) - 1;
+        int randomNum = randomGenerator.nextInt(maxNumber) + 1;
+        id += String.format("%0" + numDigits + "d", randomNum);
+        return id;
+    }
+    
+    public ShopItem getTool(String toolCode) {
+        
+        return toolMap.get(toolCode);
+    }
+
+    public ShopItem getAccessory(String accessoryCode) {
+        
+        return toolMap.get(accessoryCode);
+    }
+
+    public Customer getCustomer(String customerID) {
+        return customerMap.get(customerID);
     }
 
 }
