@@ -9,8 +9,10 @@ import java.util.Random;
 import java.util.Scanner;
 import java.io.PrintWriter;
 import javax.swing.JFileChooser;
-//import src.Tool;
-//import src.Customer;
+import java.util.Date;
+import src.DataWriter;
+import java.util.*;
+
 
 
 
@@ -19,9 +21,16 @@ public class Shop {
     ArrayList<Accessories> accessoriesList = new ArrayList<Accessories>();
     ArrayList<Customer> customerList = new ArrayList<Customer>();
 
-    HashMap<String, Customer> customerMap;
+    
     HashMap<String, Tool> toolMap;
     HashMap<String, Accessories> accessoriesMap;
+
+
+    HashMap<String, ShopItem> itemMap;
+    HashMap<String, Customer> customerMap;
+    HashMap<String, ShopItemReservation> itemReservationMap;
+    
+
 
 
     private Random randomGenerator = new Random();
@@ -32,22 +41,31 @@ public class Shop {
         toolList = new ArrayList<Tool>();
         accessoriesList = new ArrayList<Accessories>();
         customerList = new ArrayList<Customer>();
-
-        customerMap = new HashMap<>();
         accessoriesMap = new HashMap<>();
         toolMap = new HashMap<>();
+
+        customerMap = new HashMap<>();
+        itemMap = new HashMap<>();
+        itemReservationMap = new HashMap<>();
+        
     }
 
     public void storeTool(Tool tool) {
         toolList.add(tool);
         toolMap.put(tool.getItemCode(), tool);
+        itemMap.put(tool.getItemCode(), tool);
     }
 
     public void storeAccessory(Accessories accessories) {
         accessoriesList.add(accessories);
         accessoriesMap.put(accessories.getItemCode(), accessories);
+        itemMap.put(accessories.getItemCode(), accessories);
     }
 
+    public void storeItem(ShopItem item) {
+        itemMap.put(item.getItemCode(), item);
+    }
+    
     public void storeCustomer(Customer customer) {
         if (customer.getCustomerID().equals("unknown")) {
             String newID = generateCustomerID("AB-", 6);
@@ -57,7 +75,7 @@ public class Shop {
         customerMap.put(customer.getCustomerID(), customer);
     }
 
-    public void printAllTools() {
+    public void printAllItems() {
         for (Tool tool : toolList) {
             System.out.println(tool);
         }
@@ -68,7 +86,7 @@ public class Shop {
         //
     }
 
-    public void readToolData() {
+    public void readItemData() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File("."));
         int result = fileChooser.showOpenDialog(null);
@@ -238,8 +256,75 @@ public class Shop {
         return toolMap.get(accessoryCode);
     }
 
+    public ShopItem getItem(String itemCode) {
+        return itemMap.get(itemCode);
+    }
+
+
     public Customer getCustomer(String customerID) {
         return customerMap.get(customerID);
     }
 
+    public Boolean makeItemReservation(String customerID, String itemID, String startDate, int noOfDays) {
+        if (!customerMap.containsKey(customerID)) {
+            System.out.println("Invalid customer ID");
+            return false;
+        }
+        if (!itemMap.containsKey(itemID)) {
+            System.out.println("Invalid item ID");
+            return false;
+        }
+        Date start = DateUtil.convertStringToDate(startDate);
+        if (start == null) {
+            System.out.println("Invalid start date");
+            return false;
+        }
+        if (noOfDays < 1) {
+            System.out.println("Invalid number of days");
+            return false;
+        }
+        String reservationNo = generateReservationNo();
+        ShopItemReservation reservation = new ShopItemReservation(reservationNo, itemID, customerID, startDate, noOfDays);
+        itemReservationMap.put(reservationNo, reservation);
+        return true;
+    }
+    
+    public ShopItemReservation getItemReservation(String reservationNo) {
+        return itemReservationMap.get(reservationNo);
+    }
+    
+    public void printItemReservations() {
+        System.out.println("Item Reservations:");
+        for (ShopItemReservation reservation : itemReservationMap.values()) {
+            reservation.displayDetails();
+        }
+    }
+    
+    
+    
+    public void readItemReservationData() {
+        List<String> data = FileUtil.readLinesFromFile("itemReservations.txt");
+        itemReservationMap.clear();
+        for (String line : data) {
+            ShopItemReservation reservation = new ShopItemReservation();
+            reservation.readData(line);
+            itemReservationMap.put(reservation.getReservationNo(), reservation);
+        }
+    }public void writeItemReservationData() {
+        List<String> data = new ArrayList<String>();
+        for (ShopItemReservation reservation : itemReservationMap.values()) {
+            data.add(reservation.writeData());
+        }
+        FileUtil.writeLinesToFile("itemReservations.txt", data);
+    }
+    
+    private String generateReservationNo() {
+        int lastReservationNo = 0;
+        if (!itemReservationMap.isEmpty()) {
+            String lastReservationNoStr = Collections.max(itemReservationMap.keySet());
+            lastReservationNo = Integer.parseInt(lastReservationNoStr);
+        }
+        lastReservationNo++;
+        return String.format("%06d", lastReservationNo);
+    }
 }
