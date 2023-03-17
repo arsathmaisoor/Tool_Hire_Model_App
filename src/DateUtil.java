@@ -1,7 +1,6 @@
 package src;
 
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.text.ParsePosition;
 import java.util.Date;
 import java.util.Calendar;
@@ -241,7 +240,6 @@ public class DateUtil
    {
       try
       {
-         Date d = DateUtil.convertStringToDate(dateString);
          return true;
       }
       catch(RuntimeException ex)

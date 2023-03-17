@@ -27,6 +27,8 @@ public class ShopItemReservation {
         }
     }
 
+    public ShopItemReservation() {}
+
     // Getters and setters
     public String getReservationNo() {
         return reservationNo;
@@ -67,4 +69,46 @@ public class ShopItemReservation {
     public void setNoOfDays(int noOfDays) {
         this.noOfDays = noOfDays;
     }
+
+    public void displayDetails() {
+        System.out.println("Reservation details:");
+        System.out.println("Customer ID: " + this.customerID);
+        System.out.println("Item code: " + this.itemID);
+        System.out.println("Reservation date: " + this.startDate);
+        System.out.println("Reservation period: " + this.noOfDays);
+    }
+    
+    public static ShopItemReservation readData(String input) {
+        // Split the input string into its components
+        String[] components = input.split(",");
+    
+        // Parse the components into the appropriate types
+        String reservationNo = components[0];
+        String itemID = components[1];
+        String customerID = components[2];
+        String startDateString = components[3];
+        int noOfDays = Integer.parseInt(components[4]);
+    
+        // Create a new ShopItemReservation object and return it
+        return new ShopItemReservation(reservationNo, itemID, customerID, startDateString, noOfDays);
+    }
+
+    public String writeData() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(reservationNo);
+        sb.append(",");
+        sb.append(itemID);
+        sb.append(",");
+        sb.append(customerID);
+        sb.append(",");
+        sb.append(startDate.getTime()); // write the date as milliseconds since epoch
+        sb.append(",");
+        sb.append(noOfDays);
+        return sb.toString();
+    }
+    
+    
+
+    
+    
 }

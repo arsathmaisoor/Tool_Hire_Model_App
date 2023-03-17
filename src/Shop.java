@@ -3,6 +3,7 @@ package src;
 //import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -10,8 +11,8 @@ import java.util.Scanner;
 import java.io.PrintWriter;
 import javax.swing.JFileChooser;
 import java.util.Date;
-import src.DataWriter;
 import java.util.*;
+
 
 
 
@@ -302,15 +303,16 @@ public class Shop {
     
     
     
-    public void readItemReservationData() {
+    public void readItemReservationData() throws IOException {
         List<String> data = FileUtil.readLinesFromFile("itemReservations.txt");
         itemReservationMap.clear();
         for (String line : data) {
             ShopItemReservation reservation = new ShopItemReservation();
-            reservation.readData(line);
+            ShopItemReservation.readData(line);
             itemReservationMap.put(reservation.getReservationNo(), reservation);
         }
-    }public void writeItemReservationData() {
+    }
+    public void writeItemReservationData() throws IOException {
         List<String> data = new ArrayList<String>();
         for (ShopItemReservation reservation : itemReservationMap.values()) {
             data.add(reservation.writeData());
